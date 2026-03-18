@@ -7,8 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.NotBlank;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -18,9 +17,34 @@ import lombok.Builder;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
+
+
+@Entity
+@Table(name = "users")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "username", nullable = false, unique= true)
+    @NotBlank
+    private String username;
+
+    @Column(name = "password")
+    @NotBlank
+    private String password;
 
 
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
 }
