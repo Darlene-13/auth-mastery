@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: session-auth
+
+  datasource:
+    url: jdbc:h2:mem:sessionauth
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: always
+  server:
+    port: 8080
