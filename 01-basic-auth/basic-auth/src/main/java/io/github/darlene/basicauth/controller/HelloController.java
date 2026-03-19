@@ -47,5 +47,5 @@ public class  HelloController{
         log.info("Public endpoint accessed");
         return ResponseEntity.ok("This is public!");
     }
-
+git
 }
