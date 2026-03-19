@@ -1,20 +1,21 @@
 package io.github.darlene.basicauth.config;
 
-import io.github.darlene.basicauth.service.CustomUserDetailsService;
-
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.builders.HTTPSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import org.springframework.security.core.userdetails.UserDetailsService;
+
+import io.github.darlene.basicauth.service.CustomUserDetailsService;
+import lombok.RequiredArgsConstructor;
 
 /**
  *  NOTES
@@ -25,19 +26,19 @@ import org.springframework.security.web.SecurityFilterChain;
  * authorizehttp requests is where we define who can access what while requestMatchers("h2-console/)").permitAll() means the console is public thus no authentication to access it, while anyRequest().authenticated() means that any other request should be authenticated.
  * BCrypt is the industrial standarda for password hashing and is irreversable it automatically adds salts so two similar passwords are hashed differently... but is it a bit slow...
  */
-/
+
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstrcutor
-public SecurityConfig {
+@RequiredArgsConstructor
+public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .crsf(crsf -> crsf.disable())
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/api/auth/register", "/api/public", "/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(httpBasic -> httpBasic.realmName("BasicAuth App"))
@@ -51,12 +52,10 @@ public SecurityConfig {
      * This is the bridge between spring security and the database.
      * DaoAuthenticationProvider is springs built in provider for db-backed auth that need userdetailsservice and password encoder
      */
-    /
-    @Bean
-    public AuthenticationProvider authenticationProvider(){
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 
-        provider.setUserDetailsService(userDetailsService);
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
@@ -68,5 +67,10 @@ public SecurityConfig {
     @Bean
     public  AuthenticationManager authenticationManager( AuthenticationConfiguration config) throws Exception{
         return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
     }
 }

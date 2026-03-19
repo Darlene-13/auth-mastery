@@ -1,4 +1,4 @@
-package io.github.darlene.authmastery.model;
+package io.github.darlene.basicauth.model;
 
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
