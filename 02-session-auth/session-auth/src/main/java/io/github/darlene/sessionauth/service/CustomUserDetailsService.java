@@ -14,26 +14,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Service;
 
 
 @Service
-@RequiredArgsConstructor;
-
+@RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService{
 
     // Since we are doing DP injection we need the fields
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadByUsername(String username)
+    public UserDetails loadUserByUsername(String username)
         throws UsernameNotFoundException {
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(
-                        "User not found: " + username));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
-        return org.springframework.security.core.UserDetails.User
+        return org.springframework.security.core.userDetails.User
                 .withUsername(user.getUsername())
                 .authorities(user.getUserRole().name())
                 .password(user.getPassword())
